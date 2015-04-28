@@ -20,6 +20,12 @@ The package needs to write to a file, the reasons for not just return a string i
 One being memory usage, the other is that you really don't want to be dynamically resizing
 often used gif files every time they are used.
 
+### Import
+Add this requirement to your `composer.json` file:
+```json
+"grandt/phpresizegif": "1.0.0"
+```
+
 ### Initialization
 
 ```php
