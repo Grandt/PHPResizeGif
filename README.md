@@ -7,7 +7,7 @@ This package aims to implement a proper resizing of gif files encompassing the G
 ## Introduction
 
 Most, if not all other publicly available gif resize packages fails with optimized gif files,
-those where only parts of the file are updated in subsequent frames. See these are a background image,
+those where only parts of the file are updated in subsequent frames. See these as a background image,
 with sprites moving about.
 The resulting gif will retain its aspect ratio.
 
