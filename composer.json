@@ -16,7 +16,7 @@
     }
   ],
   "require": {
-    "grandt/binstring": "0.2.0.x-dev",
+    "grandt/binstring": ">=0.2.0",
     "php": ">=5.3.0"
   },
   "autoload": {
