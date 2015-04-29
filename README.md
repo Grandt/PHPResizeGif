@@ -23,7 +23,7 @@ often used gif files every time they are used.
 ### Import
 Add this requirement to your `composer.json` file:
 ```json
-"grandt/phpresizegif": "1.0.0"
+"grandt/phpresizegif": ">=1.0.1"
 ```
 
 ### Initialization
