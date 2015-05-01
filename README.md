@@ -20,10 +20,17 @@ The package needs to write to a file, the reasons for not just return a string i
 One being memory usage, the other is that you really don't want to be dynamically resizing
 often used gif files every time they are used.
 
+### Import
+Add this requirement to your `composer.json` file:
+```json
+    "grandt/phpresizegif": ">=1.0.1"
+```
+
 ### Composer
 If you already have Composer installed, skip this part.
 
 [Packagist](https://packagist.org/), the main composer repository has a neat and very short guide.
+
 Or you can look at the guide at the [Composer site](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx).
  
 The easiest for first time users, is to have the composer installed in the same directory as your composer.json file, though there are better options.
@@ -58,12 +65,6 @@ Finally, you include the `autoload.php` file in the new `vendor` directory.
     .
     .
     .
-```
-
-### Import
-Add this requirement to your `composer.json` file:
-```json
-"grandt/phpresizegif": ">=1.0.1"
 ```
 
 ### Initialization

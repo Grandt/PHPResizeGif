@@ -8,9 +8,11 @@ include "../vendor/autoload.php";
 use grandt\ResizeGif\Debug\DebugGif;
 
 // Rotating_earth and SmallFullColourGIF are from the GIF Wikipedia page.
-//// $srcFile = 'resources/Rotating_earth_(large).gif';
+// $srcFile = 'resources/Rotating_earth_(large).gif';
 $srcFile = 'resources/SmallFullColourGIF.gif';
 // $srcFile = 'resources/frame_diff_ir2t.gif';
+// $srcFile = 'test.gif';
+
 
 echo "<!doctype html><html><head><title>ResizeGif.Test2</title></head><body><pre>\n";
 

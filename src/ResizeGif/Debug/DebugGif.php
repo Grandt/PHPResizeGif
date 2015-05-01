@@ -59,7 +59,7 @@ class DebugGif {
                     echo "\n\n------------------------------------------------------------------------\n";
                     echo "--- EXTENSION BLOCK\n";
                     echo "------------------------------------------------------------------------\n\n";
-                    self::dumpExtensionBlock($fh, $frameCount);
+                    self::dumpExtensionBlock($fh, $frameCount, $lsd);
                     break;
                 case AbstractExtensionBlock::CONTROL_IMAGE:
                     $frameCount++;
@@ -84,7 +84,6 @@ class DebugGif {
                     echo "\n\n------------------------------------------------------------------------\n";
                     echo "--- UNKNOWN CODE: 0x" . bin2hex($c) . " (" . ord($c) . ")\n";
                     echo "------------------------------------------------------------------------\n\n";
-
             }
         }
         echo "\n";
@@ -94,9 +93,9 @@ class DebugGif {
 
     /**
      * @param FileHandler $fh
-     * @param int $frameCount
+     * @param int         $frameCount
      */
-    public static function dumpExtensionBlock($fh, &$frameCount) {
+    public static function dumpExtensionBlock($fh, &$frameCount, $lsd) {
 
         $fh->seekForward(1);
         $blockLabel = $fh->peekByte();
@@ -115,7 +114,7 @@ class DebugGif {
             case AbstractExtensionBlock::LABEL_GRAPHICS_CONTROL:
                 $gce = new GraphicControlExtension($fh);
                 $frameCount++;
-                self::dumpGraphicControlExtensionBlock($gce, $frameCount);
+                self::dumpGraphicControlExtensionBlock($gce, $frameCount, $lsd);
 
                 break;
             case AbstractExtensionBlock::LABEL_PLAIN_TEXT:
@@ -140,6 +139,7 @@ class DebugGif {
 
     /**
      * @param bool $data
+     *
      * @return string
      */
     public static function echoYN($data) {
@@ -167,9 +167,10 @@ class DebugGif {
 
     /**
      * @param GraphicControlExtension $gce
-     * @param $frameCount
+     * @param                         $frameCount
+     * @param LogicalScreenDescriptor $lsd
      */
-    public static function dumpGraphicControlExtensionBlock($gce, $frameCount) {
+    public static function dumpGraphicControlExtensionBlock($gce, $frameCount, $lsd) {
         /**
          * Disposal Method Values:
          * 0 -   No disposal specified. The decoder is not required to take any action.
@@ -198,8 +199,22 @@ class DebugGif {
         echo "    - gceUserInputFlag..............: " . self::echoYN($gce->userInputFlag) . "\n";
         echo "    - gceTransparentColorFlag.......: " . self::echoYN($gce->transparentColorFlag) . "\n";
         echo "  - gceDelayTime....................: " . $gce->delayTime . "\n";
-        echo "  - gceTransparentColorIndex........: " . $gce->transparentColorIndex . "\n";
-
+        echo "  - gceTransparentColorIndex........: " . $gce->transparentColorIndex;
+        if ($gce->transparentColorFlag) {
+            $ct = null;
+            if ($gce->imageDescriptor->colorTableFlag && $gce->imageDescriptor->colorTableSize > 0) {
+                $ct = $gce->imageDescriptor->colorTable;
+            } else {
+                $ct = $lsd->colorTable;
+            }
+            if (isset($ct)) {
+                echo " (0x";
+                echo bin2hex(BinStringStatic::_substr($ct, $gce->transparentColorIndex * 3, 3));
+                echo " (rrggbb))\n";
+            } else {
+                echo "\n";
+            }
+        }
         echo "\n--- Image Descriptor (FRAME) " . $frameCount . "\n\n";
         self::dumpImageDescriptor($gce->imageDescriptor);
     }
@@ -211,6 +226,8 @@ class DebugGif {
         echo " Comment Extension Block............: CEB 0xFE (254)\n";
 
         echo "  - sub blocks total length.........: " . (BinStringStatic::_strlen($ceb->dataSubBlocks)) . "\n";
+        echo "  - sub blocks content..............: " . $ceb->getComment() . "\n";
+
     }
 
     /**
@@ -244,6 +261,10 @@ class DebugGif {
 
         if ($idb->colorTableFlag && $idb->colorTableSize > 0) {
             echo "LCT present.\n";
+            if ($idb->colorTableSize < 16) {
+                echo "idb Color Table content.............: ";
+                echo bin2hex($idb->colorTable) . "\n";
+            }
         } else {
             echo "No LCT.\n";
         }
@@ -264,7 +285,10 @@ class DebugGif {
         echo "  - lsdColorResolution..............: " . $lsd->colorResolution . "\n";
         echo "  - lsdSortFlag.....................: " . self::echoYN($lsd->sortFlag) . "\n";
         echo "  - lsdGlobalColorTableSize.........: " . $lsd->colorTableSize . "\n";
-        echo "lsdBGColorIndex.....................: " . $lsd->bgColorIndex . "\n";
+        echo "lsdBGColorIndex.....................: " . $lsd->bgColorIndex;
+        echo " (0x";
+        echo bin2hex(BinStringStatic::_substr($lsd->colorTable, $lsd->bgColorIndex * 3, 3));
+        echo " (rrggbb))\n";
         echo "lsdPixelAspectRatio.................: " . $lsd->pixelAspectRatio . "\n";
 
         echo "\n";
@@ -272,6 +296,10 @@ class DebugGif {
 
         if ($lsd->colorTableFlag && $lsd->colorTableSize > 0) {
             echo "GCT present.\n";
+            if ($lsd->colorTableSize < 16) {
+                echo "Global Color Table content..........: ";
+                echo bin2hex($lsd->colorTable) . "\n";
+            }
         } else {
             echo "No GCT.\n";
         }

@@ -209,13 +209,12 @@ class ImageDescriptor extends AbstractExtensionBlock {
         $this->dataSubBlocks = $nId->dataSubBlocks;
     }
 
-
     /**
      * @param FileHandler $fh
      * @param GraphicControlExtension $gce
      * @return ImageDescriptor
      */
-    private static function getFirstImageDescriptor($fh, $gce = null) {
+    public static function getFirstImageDescriptor($fh, $gce = null) {
         $nId = null;
 
         while ($nId == null && !$fh->isEOF()) {

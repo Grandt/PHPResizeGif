@@ -19,14 +19,14 @@ class LogicalScreenDescriptor extends AbstractExtensionBlock {
     public $screenWidth;
     public $screenHeight;
 
-    public $colorTableFlag;
-    public $colorResolution;
-    public $sortFlag;
-    public $colorTableSize;
-    public $bgColorIndex;
+    public $colorTableFlag = false;
+    public $colorResolution = 0;
+    public $sortFlag = false;
+    public $colorTableSize = 2;
+    public $bgColorIndex = 0;
     public $pixelAspectRatio;
 
-    public $colorTable;
+    public $colorTable = "\x00\x00\x00\x00\x00\x00";
 
     /**
      * @return string
@@ -34,10 +34,10 @@ class LogicalScreenDescriptor extends AbstractExtensionBlock {
     public function encode() {
         $ctSize = BinStringStatic::_strlen($this->colorTable);
         if ($ctSize > 0) {
-            $this->colorTableFlag = TRUE;
+            $this->colorTableFlag = true;
             $this->colorTableSize = $ctSize / 3;
         } else {
-            $this->colorTableFlag = FALSE;
+            $this->colorTableFlag = false;
             $this->colorTableSize = 2;
         }
 
@@ -60,11 +60,13 @@ class LogicalScreenDescriptor extends AbstractExtensionBlock {
         if ($this->colorTableFlag && $this->colorTableSize > 0) {
             $r .= $this->colorTable;
         }
+
         return $r;
     }
 
     /**
      * @param FileHandler $fh
+     *
      * @throws Exception
      */
     public function decode($fh) {

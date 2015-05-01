@@ -8,6 +8,7 @@
 
 namespace grandt\ResizeGif\Structure;
 
+use com\grandt\BinStringStatic;
 use grandt\ResizeGif\Files\FileHandler;
 
 /**
@@ -39,5 +40,16 @@ class CommentExtension extends AbstractExtensionBlock {
      */
     public function encode() {
         return "\x21" . chr($this->blockLabel) . $this->dataSubBlocks . "\x00";
+    }
+
+    public function getComment() {
+        $pos = 0;
+        $len = BinStringStatic::_strlen($this->dataSubBlocks);
+        $comment = "";
+        while ($pos < $len && ord($this->dataSubBlocks[$pos]) > 0) {
+            $comment .= BinStringStatic::_substr($this->dataSubBlocks, $pos+1, ord($this->dataSubBlocks[$pos]));
+            $pos += 1 + ord($this->dataSubBlocks[$pos]);
+        }
+        return $comment;
     }
 }

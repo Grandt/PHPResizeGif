@@ -70,3 +70,4 @@ tests/*.lock
 tests/*.phar
 tests/vendor
 tests/vendor/*
+tests/*.bat
