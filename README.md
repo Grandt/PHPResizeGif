@@ -23,7 +23,7 @@ often used gif files every time they are used.
 ### Import
 Add this requirement to your `composer.json` file:
 ```json
-    "grandt/phpresizegif": ">=1.0.2"
+    "grandt/phpresizegif": ">=1.0.3"
 ```
 
 ### Composer
@@ -46,7 +46,7 @@ Once composer is installed you can create the `composer.json` file to import thi
 ```json
 {
     "require": {
-        "grandt/phpresizegif": ">=1.0.2"
+        "grandt/phpresizegif": ">=1.0.3"
     }
 }
 ```
