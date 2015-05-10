@@ -1,5 +1,25 @@
 <?php
-
+/**
+ * Copyright (C) 2015  A. Grandt
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @author    A. Grandt <php@grandt.com>
+ * @copyright 2015- A. Grandt
+ * @license   GNU LGPL 2.1
+ */
 namespace grandt\ResizeGif\Files;
 
 use com\grandt\BinStringStatic;
@@ -33,13 +53,6 @@ define('SYS_BIG_ENDIAN', pack('L', 1) === pack('N', 1));
  * May whomever thought it was a good idea to provide packing codes for machine specific
  * length and endianess feel the pain and misery of every developer having to deal with it,
  * for all eternity.
- *
- * License: GNU LGPL 2.1.
- *
- * @author    A. Grandt <php@grandt.com>
- * @copyright 2015 A. Grandt
- * @license   GNU LGPL 2.1
- * @version   1.0.0
  */
 class DataHandler {
     const LITTLE_ENDIAN = 0;
@@ -62,8 +75,9 @@ class DataHandler {
     /**
      * Pack a signed 16-bit integer with a specific endianess.
      *
-     * @param $number
+     * @param     $number
      * @param int $endianess DataHandler::LITTLE_ENDIAN or DataHandler::BIG_ENDIAN
+     *
      * @return string
      */
     public static function packInt16($number, $endianess = self::LITTLE_ENDIAN) {
@@ -71,26 +85,30 @@ class DataHandler {
         if ((SYS_BIG_ENDIAN ? self::BIG_ENDIAN : self::LITTLE_ENDIAN) != $endianess) {
             return strrev($s);
         }
+
         return $s;
     }
 
     /**
      * Pack a signed 16-bit integer with a specific endianess.
      *
-     * @param $number
+     * @param     $number
      * @param int $endianess DataHandler::LITTLE_ENDIAN or DataHandler::BIG_ENDIAN
+     *
      * @return string
      */
     public static function packUint16($number, $endianess = self::LITTLE_ENDIAN) {
         $ps = $endianess == self::LITTLE_ENDIAN ? 'v' : 'n';
+
         return pack($ps, ($number));
     }
 
     /**
      * Unpack a signed 16-bit integer with a specific endianess.
      *
-     * @param $data
+     * @param     $data
      * @param int $endianess DataHandler::LITTLE_ENDIAN or DataHandler::BIG_ENDIAN
+     *
      * @return int
      */
     public static function unpackInt16($data, $endianess = self::LITTLE_ENDIAN) {
@@ -100,13 +118,15 @@ class DataHandler {
     /**
      * Unpack an unsigned 16-bit integer with a specific endianess.
      *
-     * @param $data
+     * @param     $data
      * @param int $endianess DataHandler::LITTLE_ENDIAN or DataHandler::BIG_ENDIAN
+     *
      * @return int
      */
     public static function unpackUint16($data, $endianess = self::LITTLE_ENDIAN) {
         $ps = $endianess == self::LITTLE_ENDIAN ? 'v' : 'n';
         $out = unpack($ps, $data);
+
         return $out[1];
     }
 
@@ -114,8 +134,9 @@ class DataHandler {
     /**
      * Pack a 32-bit integer with a specific endianess.
      *
-     * @param $number
+     * @param     $number
      * @param int $endianess DataHandler::LITTLE_ENDIAN or DataHandler::BIG_ENDIAN
+     *
      * @return string
      */
     public static function packInt32($number, $endianess = self::LITTLE_ENDIAN) {
@@ -123,26 +144,30 @@ class DataHandler {
         if ((SYS_BIG_ENDIAN ? self::BIG_ENDIAN : self::LITTLE_ENDIAN) != $endianess) {
             return strrev($s);
         }
+
         return $s;
     }
 
     /**
      * Pack a 32-bit integer with a specific endianess.
      *
-     * @param $number
+     * @param     $number
      * @param int $endianess DataHandler::LITTLE_ENDIAN or DataHandler::BIG_ENDIAN
+     *
      * @return string
      */
     public static function packUint32($number, $endianess = self::LITTLE_ENDIAN) {
         $ps = $endianess == self::LITTLE_ENDIAN ? 'V' : 'N';
+
         return pack($ps, $number);
     }
 
     /**
      * Unpack a signed 32-bit integer with a specific endianess.
      *
-     * @param $data
+     * @param     $data
      * @param int $endianess DataHandler::LITTLE_ENDIAN or DataHandler::BIG_ENDIAN
+     *
      * @return int
      */
     public static function unpackInt32($data, $endianess = self::LITTLE_ENDIAN) {
@@ -152,13 +177,15 @@ class DataHandler {
     /**
      * Unpack an unsigned 32-bit integer with a specific endianess.
      *
-     * @param $data
+     * @param     $data
      * @param int $endianess DataHandler::LITTLE_ENDIAN or DataHandler::BIG_ENDIAN
+     *
      * @return int
      */
     public static function unpackUint32($data, $endianess = self::LITTLE_ENDIAN) {
         $ps = $endianess == self::LITTLE_ENDIAN ? 'V' : 'N';
         $out = unpack($ps, $data);
+
         return $out[1];
     }
 
@@ -168,8 +195,9 @@ class DataHandler {
      *
      * On 32-bit systems, this will only pack the lower 4 bytes, padding the output to 8
      *
-     * @param $number
+     * @param     $number
      * @param int $endianess DataHandler::LITTLE_ENDIAN or DataHandler::BIG_ENDIAN
+     *
      * @return string
      * @throws Exception Exception 32-bit systems do not support 64-bit encoding.
      */
@@ -185,6 +213,7 @@ class DataHandler {
         if ((SYS_BIG_ENDIAN ? self::BIG_ENDIAN : self::LITTLE_ENDIAN) != $endianess) {
             return strrev($s);
         }
+
         return $s;
     }
 
@@ -193,8 +222,9 @@ class DataHandler {
      *
      * On 32-bit systems, this will only pack the lower 4 bytes, padding the output to 8
      *
-     * @param $number
+     * @param     $number
      * @param int $endianess DataHandler::LITTLE_ENDIAN or DataHandler::BIG_ENDIAN
+     *
      * @return string
      * @throws Exception Exception 32-bit systems do not support 64-bit encoding.
      */
@@ -207,6 +237,7 @@ class DataHandler {
         }
         // pack had 64-bit functions added in 5.6.3,
         $out = pack($endianess == self::LITTLE_ENDIAN ? 'J' : 'P', $number);
+
         return $out[1];
     }
 
@@ -215,8 +246,9 @@ class DataHandler {
      *
      * WARNING: Do not use on 32-bit PHP installations.
      *
-     * @param $data
+     * @param     $data
      * @param int $endianess DataHandler::LITTLE_ENDIAN or DataHandler::BIG_ENDIAN
+     *
      * @return int
      * @throws Exception Exception 32-bit systems do not support 64-bit encoding.
      */
@@ -248,8 +280,9 @@ class DataHandler {
     /**
      * Unpack an unigned 64-bit integer with a specific endianess.
      *
-     * @param $data
+     * @param     $data
      * @param int $endianess DataHandler::LITTLE_ENDIAN or DataHandler::BIG_ENDIAN
+     *
      * @return int
      * @throws Exception Exception 32-bit systems do not support 64-bit encoding.
      */
@@ -262,15 +295,18 @@ class DataHandler {
         if (PHP_VERSION_ID >= 50603) {
             // pack had 64-bit functions added in 5.6.3,
             $out = unpack($isTargetLE ? 'J' : 'P', $data);
+
             return $out[1];
         }
+
         return self::int2Uint64(self::unpackInt64($data, $endianess));
     }
 
     /**
      * @param int $number
-     * @param int $bytes number of bytes to pack. 8, 4, 2 or 1;
+     * @param int $bytes     number of bytes to pack. 8, 4, 2 or 1;
      * @param int $endianess DataHandler::LITTLE_ENDIAN or DataHandler::BIG_ENDIAN
+     *
      * @return string
      */
     public static function pack($number, $bytes, $endianess) {
@@ -280,6 +316,7 @@ class DataHandler {
     /**
      * @param $number
      * @param $bytes number of bytes to pack. 8, 4, 2 or 1;
+     *
      * @return string
      */
     public static function packLE($number, $bytes) {
@@ -301,6 +338,7 @@ class DataHandler {
     /**
      * @param $number
      * @param $bytes number of bytes to pack. 8, 4, 2 or 1;
+     *
      * @return string
      */
     public static function packBE($number, $bytes) {
@@ -321,6 +359,7 @@ class DataHandler {
      * Convert an unsigned 16-bit integer to a signed 16-bit integer.
      *
      * @param $number
+     *
      * @return int
      */
     public static function uint2Int16($number) {
@@ -328,6 +367,7 @@ class DataHandler {
         if ($number >= 0x8000) { // 1<<15
             $number -= 0x10000; // 1<<16;
         }
+
         return $number;
     }
 
@@ -335,6 +375,7 @@ class DataHandler {
      * Convert a signed 16-bit integer to an unsigned 16-bit integer.
      *
      * @param $number
+     *
      * @return int
      */
     public static function int2Uint16($number) {
@@ -342,6 +383,7 @@ class DataHandler {
         if ($number < 0) {
             $number += 0x10000; // 1<<16;
         }
+
         return $number;
     }
 
@@ -349,6 +391,7 @@ class DataHandler {
      * Convert an unsigned 32-bit integer to a signed 32-bit integer.
      *
      * @param $number
+     *
      * @return int
      */
     public static function uint2Int32($number) {
@@ -358,6 +401,7 @@ class DataHandler {
             $number -= 0x0000ffff;
             $number--;
         }
+
         return $number;
     }
 
@@ -365,6 +409,7 @@ class DataHandler {
      * Convert a signed 32-bit integer to an unsigned 32-bit integer.
      *
      * @param $number
+     *
      * @return int
      */
     public static function int2Uint32($number) {
@@ -375,6 +420,7 @@ class DataHandler {
             $number += 0x0000ffff;
             $number++;
         }
+
         return $number;
     }
 
@@ -382,6 +428,7 @@ class DataHandler {
      * Convert an unsigned 64-bit integer to a signed 64-bit integer.
      *
      * @param $number
+     *
      * @return int
      * @throws Exception Exception 32-bit systems do not support 64-bit encoding.
      */
@@ -394,6 +441,7 @@ class DataHandler {
             $number -= 0xffffffffffffffff;
             $number--;
         }
+
         return $number;
     }
 
@@ -401,6 +449,7 @@ class DataHandler {
      * Convert a signed 64-bit integer to an unsigned 64-bit integer.
      *
      * @param $number
+     *
      * @return int
      * @throws Exception 32-bit systems do not support 64-bit encoding.
      */
@@ -413,6 +462,7 @@ class DataHandler {
             $number += 0xffffffffffffffff;
             $number++;
         }
+
         return $number;
     }
 

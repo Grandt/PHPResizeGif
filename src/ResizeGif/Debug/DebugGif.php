@@ -1,4 +1,25 @@
 <?php
+/**
+ * Copyright (C) 2015  A. Grandt
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @author    A. Grandt <php@grandt.com>
+ * @copyright 2015- A. Grandt
+ * @license   GNU LGPL 2.1
+ */
 namespace grandt\ResizeGif\Debug;
 
 use com\grandt\BinStringStatic;
@@ -15,16 +36,9 @@ use grandt\ResizeGif\Structure\PlainTextExtension;
 
 /**
  * Open, and dump details of a GIF file.
- *
- * License: GNU LGPL 2.1.
- *
- * @author    A. Grandt <php@grandt.com>
- * @copyright 2015 A. Grandt
- * @license   GNU LGPL 2.1
- * @version   1.0.0
  */
 class DebugGif {
-    public static function dumpGif($file) {
+    public static function dumpGif($file, $dstDir = null, $dstFilePrefix = null) {
         $fh = new FileHandler();
         $frameCount = 0;
 
@@ -46,6 +60,18 @@ class DebugGif {
             $fh->closeFile();
             throw new Exception("Not a gif file.");
         }
+        $dstPath = null;
+        if ($dstDir != null) {
+            $dstDir = str_replace("\\", "/", $dstDir);
+            if ($dstFilePrefix == null) {
+                $dstFilePrefix = basename($file, '.gif');
+            }
+            $lc = substr($dstDir, -1);
+            if ("/" !== $lc) {
+                $dstDir .= "/";
+            }
+            $dstPath = $dstDir . $dstFilePrefix . "_";
+        }
 
         echo "\n\n------------------------------------------------------------------------\n";
         echo "--- LOGICAL SCREEN DESCTIPTOR\n";
@@ -59,7 +85,7 @@ class DebugGif {
                     echo "\n\n------------------------------------------------------------------------\n";
                     echo "--- EXTENSION BLOCK\n";
                     echo "------------------------------------------------------------------------\n\n";
-                    self::dumpExtensionBlock($fh, $frameCount, $lsd);
+                    self::dumpExtensionBlock($fh, $frameCount, $lsd, $dstPath);
                     break;
                 case AbstractExtensionBlock::CONTROL_IMAGE:
                     $frameCount++;
@@ -68,6 +94,8 @@ class DebugGif {
                     echo "------------------------------------------------------------------------\n\n";
                     $idb = new ImageDescriptor($fh);
                     self::dumpImageDescriptor($idb);
+                    self::writeFrame($dstPath, $frameCount, $lsd, $idb);
+
                     break;
                 case AbstractExtensionBlock::CONTROL_TRAILER:
                     echo "\n\n------------------------------------------------------------------------\n";
@@ -92,10 +120,12 @@ class DebugGif {
     }
 
     /**
-     * @param FileHandler $fh
-     * @param int         $frameCount
+     * @param FileHandler             $fh
+     * @param int                     $frameCount
+     * @param LogicalScreenDescriptor $lsd
+     * @param string                  $dstPath
      */
-    public static function dumpExtensionBlock($fh, &$frameCount, $lsd) {
+    public static function dumpExtensionBlock($fh, &$frameCount, $lsd, $dstPath = null) {
 
         $fh->seekForward(1);
         $blockLabel = $fh->peekByte();
@@ -114,7 +144,7 @@ class DebugGif {
             case AbstractExtensionBlock::LABEL_GRAPHICS_CONTROL:
                 $gce = new GraphicControlExtension($fh);
                 $frameCount++;
-                self::dumpGraphicControlExtensionBlock($gce, $frameCount, $lsd);
+                self::dumpGraphicControlExtensionBlock($gce, $frameCount, $lsd, $dstPath);
 
                 break;
             case AbstractExtensionBlock::LABEL_PLAIN_TEXT:
@@ -169,8 +199,9 @@ class DebugGif {
      * @param GraphicControlExtension $gce
      * @param                         $frameCount
      * @param LogicalScreenDescriptor $lsd
+     * @param string                  $dstPath
      */
-    public static function dumpGraphicControlExtensionBlock($gce, $frameCount, $lsd) {
+    public static function dumpGraphicControlExtensionBlock($gce, $frameCount, $lsd, $dstPath = null) {
         /**
          * Disposal Method Values:
          * 0 -   No disposal specified. The decoder is not required to take any action.
@@ -217,6 +248,7 @@ class DebugGif {
         }
         echo "\n--- Image Descriptor (FRAME) " . $frameCount . "\n\n";
         self::dumpImageDescriptor($gce->imageDescriptor);
+        self::writeFrame($dstPath, $frameCount, $lsd, $gce);
     }
 
     /**
@@ -227,7 +259,6 @@ class DebugGif {
 
         echo "  - sub blocks total length.........: " . (BinStringStatic::_strlen($ceb->dataSubBlocks)) . "\n";
         echo "  - sub blocks content..............: " . $ceb->getComment() . "\n";
-
     }
 
     /**
@@ -331,5 +362,26 @@ class DebugGif {
         HexBlock::printBlock($fh, $fh->getLength(), false);
         echo "\n";
         $fh->closeFile();
+    }
+
+    /**
+     * @param string                  $dstPath
+     * @param int                     $frameCount
+     * @param LogicalScreenDescriptor $lsd
+     * @param AbstractExtensionBlock  $aeb
+     *
+     * @throws Exception
+     */
+    private static function writeFrame($dstPath, $frameCount, $lsd, $aeb) {
+        if ($dstPath !== null) {
+            $dstFileName = $dstPath . str_pad(strval($frameCount), 3, "0", STR_PAD_LEFT) . ".gif";
+            $fhW = new FileHandler();
+            $fhW->openFile($dstFileName, true);
+            $fhW->writeData("GIF89a");
+            $lsd->encodeToFile($fhW);
+            $aeb->encodeToFile($fhW);
+            $fhW->writeData("\x3b");
+            $fhW->closeFile();
+        }
     }
 }

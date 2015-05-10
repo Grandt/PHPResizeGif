@@ -1,5 +1,25 @@
 <?php
-
+/**
+ * Copyright (C) 2015  A. Grandt
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @author    A. Grandt <php@grandt.com>
+ * @copyright 2015- A. Grandt
+ * @license   GNU LGPL 2.1
+ */
 namespace grandt\ResizeGif\Files;
 
 use com\grandt\BinStringStatic;
@@ -7,13 +27,6 @@ use Exception;
 
 /**
  * Wrapping file access, helping the user to enforce endianess of the files read or written.
- *
- * License: GNU LGPL 2.1.
- *
- * @author    A. Grandt <php@grandt.com>
- * @copyright 2015 A. Grandt
- * @license   GNU LGPL 2.1
- * @version   1.0.0
  */
 class FileHandler {
     const LITTLE_ENDIAN = DataHandler::LITTLE_ENDIAN;
@@ -53,8 +66,9 @@ class FileHandler {
      * Open a file for reading
      *
      * @param string $filename
-     * @param bool $isWritable
-     * @param int $endianess
+     * @param bool   $isWritable
+     * @param int    $endianess
+     *
      * @throws Exception
      */
     public function openFile($filename, $isWritable = false, $endianess = -1) {
@@ -105,6 +119,7 @@ class FileHandler {
      * Rewind the file pointer location by $length bytes.
      *
      * @param integer $length
+     *
      * @return int the new position in the file.
      */
     public function seekReverse($length) {
@@ -116,8 +131,10 @@ class FileHandler {
                 $length = $this->getPointer();
             }
             fseek($this->handle, -$length, SEEK_CUR);
+
             return $this->getPointer();
         }
+
         return 0;
     }
 
@@ -125,6 +142,7 @@ class FileHandler {
      * Forward the file pointer location by $length bytes.
      *
      * @param integer $length
+     *
      * @return int the new position in the file.
      */
     public function seekForward($length) {
@@ -137,8 +155,10 @@ class FileHandler {
                 $length = $this->getRemainingBytes();
             }
             fseek($this->handle, $length, SEEK_CUR);
+
             return $this->getPointer();
         }
+
         return 0;
     }
 
@@ -146,6 +166,7 @@ class FileHandler {
      * Set the file pointer location.
      *
      * @param integer $position
+     *
      * @return int the new position in the file.
      */
     public function seekAbs($position) {
@@ -156,8 +177,10 @@ class FileHandler {
                 $position = 0;
             }
             fseek($this->handle, $position, SEEK_SET);
+
             return $this->getPointer();
         }
+
         return 0;
     }
 
@@ -165,6 +188,7 @@ class FileHandler {
      * Set the file pointer location at the end of the file.
      *
      * @param integer $position
+     *
      * @return int the new position in the file.
      */
     public function seekEnd($position = 0) {
@@ -176,8 +200,10 @@ class FileHandler {
                 $position = $this->getLength();
             }
             fseek($this->handle, -$position, SEEK_END);
+
             return $this->getPointer();
         }
+
         return 0;
     }
 
@@ -207,6 +233,7 @@ class FileHandler {
 
             return $data;
         }
+
         return "";
     }
 
@@ -221,6 +248,7 @@ class FileHandler {
         if (isset($this->handle)) {
             return fread($this->handle, $dataLength);
         }
+
         return "";
     }
 
@@ -231,6 +259,7 @@ class FileHandler {
      * Be <b>very</b> careful with this one.
      *
      * @param integer $skipBytes
+     *
      * @return string
      */
     public function readDataBlock($skipBytes = 0) {
@@ -242,6 +271,7 @@ class FileHandler {
                 return $this->readData($length);
             }
         }
+
         return "";
     }
 
@@ -253,6 +283,7 @@ class FileHandler {
     public function peekByte() {
         $b = $this->readData(1);
         $this->seekReverse(1);
+
         return $b;
     }
 
@@ -274,6 +305,7 @@ class FileHandler {
         if (isset($this->handle)) {
             return ord($this->readByte());
         }
+
         return 0;
     }
 
@@ -299,6 +331,7 @@ class FileHandler {
         if (isset($this->handle)) {
             return DataHandler::unpackUint16(fread($this->handle, 2), $this->getTargetEndianess($endianess));
         }
+
         return 0;
     }
 
@@ -324,6 +357,7 @@ class FileHandler {
         if (isset($this->handle)) {
             return DataHandler::unpackUint32(fread($this->handle, 4), $this->getTargetEndianess($endianess));
         }
+
         return 0;
     }
 
@@ -349,6 +383,7 @@ class FileHandler {
         if (isset($this->handle)) {
             return DataHandler::unpackUint64(fread($this->handle, 8), $this->getTargetEndianess($endianess));
         }
+
         return 0;
     }
 
@@ -356,12 +391,14 @@ class FileHandler {
      * Write a section of the data from the current pointer location.
      *
      * @param $data
+     *
      * @return int
      */
     public function writeData($data) {
         if (isset($this->handle) && $this->isWritable) {
             return fwrite($this->handle, $data);
         }
+
         return 0;
     }
 
@@ -374,13 +411,14 @@ class FileHandler {
         if (isset($this->handle) && $this->isWritable) {
             return $this->writeData($this->handle, chr($number & 0xff));
         }
+
         return 0;
     }
 
     /**
      * Write a two byte 16-bit signed short.
      *
-     * @param $number
+     * @param     $number
      * @param int $endianess Write number with specified endianess, defaults to the file endianess.
      */
     public function writeInt16($number, $endianess = -1) {
@@ -392,7 +430,7 @@ class FileHandler {
     /**
      * Write a four byte 32-bit signed int.
      *
-     * @param $number
+     * @param     $number
      * @param int $endianess Write number with specified endianess, defaults to the file endianess.
      */
     public function writeInt32($number, $endianess = -1) {
@@ -404,7 +442,7 @@ class FileHandler {
     /**
      * Write an eight byte 64-bit signed long.
      *
-     * @param $number
+     * @param     $number
      * @param int $endianess Write number with specified endianess, defaults to the file endianess.
      */
     public function writeInt64($number, $endianess = -1) {
@@ -416,7 +454,7 @@ class FileHandler {
     /**
      * Write a two byte 16-bit signed short.
      *
-     * @param $number
+     * @param     $number
      * @param int $endianess Write number with specified endianess, defaults to the file endianess.
      */
     public function writeUint16($number, $endianess = -1) {
@@ -428,7 +466,7 @@ class FileHandler {
     /**
      * Write a four byte 32-bit signed int.
      *
-     * @param $number
+     * @param     $number
      * @param int $endianess Write number with specified endianess, defaults to the file endianess.
      */
     public function writeUint32($number, $endianess = -1) {
@@ -440,7 +478,7 @@ class FileHandler {
     /**
      * Write an eight byte 64-bit signed long.
      *
-     * @param $number
+     * @param     $number
      * @param int $endianess Write number with specified endianess, defaults to the file endianess.
      */
     public function writeUint64($number, $endianess = -1) {
@@ -460,6 +498,7 @@ class FileHandler {
         if (isset($this->handle)) {
             return $this->peekByte() === $byte;
         }
+
         return false;
     }
 
@@ -479,6 +518,7 @@ class FileHandler {
 
             return $data === $byteSequence;
         }
+
         return false;
     }
 
@@ -500,6 +540,7 @@ class FileHandler {
         if (isset($this->handle)) {
             return ftell($this->handle);
         }
+
         return 0;
     }
 
@@ -511,8 +552,10 @@ class FileHandler {
     public function getLength() {
         if (isset($this->handle)) {
             $stat = fstat($this->handle);
+
             return $stat['size'];
         }
+
         return 0;
     }
 
@@ -525,11 +568,13 @@ class FileHandler {
         if (isset($this->handle)) {
             return $this->getLength() - ftell($this->handle);
         }
+
         return 0;
     }
 
     /**
      * @param $endianess
+     *
      * @return int
      */
     private function getTargetEndianess($endianess = -1) {

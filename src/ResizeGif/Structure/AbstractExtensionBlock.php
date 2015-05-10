@@ -1,24 +1,29 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: grandt
- * Date: 24-04-2015
- * Time: 07:32
+ * Copyright (C) 2015  A. Grandt
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @author    A. Grandt <php@grandt.com>
+ * @copyright 2015- A. Grandt
+ * @license   GNU LGPL 2.1
  */
-
 namespace grandt\ResizeGif\Structure;
-
 
 use grandt\ResizeGif\Files\FileHandler;
 
-/**
- * License: GNU LGPL 2.1.
- *
- * @author    A. Grandt <php@grandt.com>
- * @copyright 2015 A. Grandt
- * @license   GNU LGPL 2.1
- * @version   1.0.0
- */
 abstract class AbstractExtensionBlock {
     public $ctSizeList = array(2 => 0, 4 => 1, 8 => 2, 16 => 3, 32 => 4, 64 => 5, 128 => 6, 256 => 7);
     public $ctSizeListRev = array(0 => 2, 1 => 4, 2 => 8, 3 => 16, 4 => 32, 5 => 64, 6 => 128, 7 => 256);

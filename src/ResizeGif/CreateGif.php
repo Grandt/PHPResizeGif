@@ -1,5 +1,25 @@
 <?php
-
+/**
+ * Copyright (C) 2015  A. Grandt
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @author    A. Grandt <php@grandt.com>
+ * @copyright 2015- A. Grandt
+ * @license   GNU LGPL 2.1
+ */
 namespace grandt\ResizeGif;
 
 use com\grandt\BinStringStatic;
@@ -54,11 +74,11 @@ class CreateGif {
     private $fh = null;
 
     /**
-     * @param int    $width   Target width of the new gif file.
-     * @param int    $height  Target height of the new gif file.
-     * @param int|array    $bgColor if an integer is the background color index, and only used with $globalColorTable. Else the $bgColor is an array with three 8-bit values, for indexes 'r', 'g', 'b'
-     * @param string $globalColorTable binary string with color data, 1 byte per channel, three channel per color in the order R, G, B. The table MUST contain either 2, 4, 8, 16, 32, 64, 128 or 256 colors. Pad with 0x00 bytes.
-     * @param string $dstFile Filename to write to. If set to null (default) the gif will be streamed to the standard output.
+     * @param int       $width            Target width of the new gif file.
+     * @param int       $height           Target height of the new gif file.
+     * @param int|array $bgColor          if an integer is the background color index, and only used with $globalColorTable. Else the $bgColor is an array with three 8-bit values, for indexes 'r', 'g', 'b'
+     * @param string    $globalColorTable binary string with color data, 1 byte per channel, three channel per color in the order R, G, B. The table MUST contain either 2, 4, 8, 16, 32, 64, 128 or 256 colors. Pad with 0x00 bytes.
+     * @param string    $dstFile          Filename to write to. If set to null (default) the gif will be streamed to the standard output.
      *
      * @throws Exception
      */
@@ -139,8 +159,10 @@ class CreateGif {
         $tFile = $srcFile;
         $fhT = new FileHandler();
         $fhT->openFile($tFile);
-        $isGif = $fhT->readData(4) == "GIF8";
+        $header = $fhT->readData(6);
         $fhT->closeFile();
+
+        $isGif = $header === "GIF87a" || $header === "GIF89a";
 
         $cleanTempFile = false;
         if (!$isGif) {

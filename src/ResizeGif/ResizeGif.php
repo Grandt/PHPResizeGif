@@ -1,5 +1,25 @@
 <?php
-
+/**
+ * Copyright (C) 2015  A. Grandt
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @author    A. Grandt <php@grandt.com>
+ * @copyright 2015- A. Grandt
+ * @license   GNU LGPL 2.1
+ */
 namespace grandt\ResizeGif;
 
 use Exception;
@@ -13,15 +33,6 @@ use grandt\ResizeGif\Structure\ImageDescriptor;
 use grandt\ResizeGif\Structure\LogicalScreenDescriptor;
 use grandt\ResizeGif\Structure\PlainTextExtension;
 
-
-/**
- * License: GNU LGPL 2.1.
- *
- * @author    A. Grandt <php@grandt.com>
- * @copyright 2015 A. Grandt
- * @license   GNU LGPL 2.1
- * @version   1.0.0
- */
 class ResizeGif {
 
     /**
@@ -29,7 +40,8 @@ class ResizeGif {
      *
      * @param string $srcFile
      * @param string $dstFile the destination file. This will get overwritten if it already exists.
-     * @param int $width
+     * @param int    $width
+     *
      * @throws Exception
      */
     public static function ResizeToWidth($srcFile, $dstFile, $width) {
@@ -48,7 +60,8 @@ class ResizeGif {
      *
      * @param string $srcFile
      * @param string $dstFile the destination file. This will get overwritten if it already exists.
-     * @param int $height
+     * @param int    $height
+     *
      * @throws Exception
      */
     public static function ResizeToHeight($srcFile, $dstFile, $height) {
@@ -68,7 +81,8 @@ class ResizeGif {
      *
      * @param string $srcFile
      * @param string $dstFile the destination file. This will get overwritten if it already exists.
-     * @param float $ratio
+     * @param float  $ratio
+     *
      * @throws Exception
      */
     public static function ResizeByRatio($srcFile, $dstFile, $ratio) {
@@ -92,7 +106,7 @@ class ResizeGif {
             if (is_file($dstFile)) {
                 unlink($dstFile);
             }
-            $fhW->openFile($dstFile, TRUE);
+            $fhW->openFile($dstFile, true);
         } catch (Exception $e) {
             throw $e;
         }
@@ -111,6 +125,7 @@ class ResizeGif {
 
     /**
      * @param string $file
+     *
      * @return array with "width" and "height" of the gif file.
      * @throws Exception
      */
@@ -129,7 +144,7 @@ class ResizeGif {
             throw new Exception("Not a gif file.");
         }
         $size = array(
-            "width" => $fh->readUint16(),
+            "width"  => $fh->readUint16(),
             "height" => $fh->readUint16());
         $fh->closeFile();
 
@@ -137,9 +152,9 @@ class ResizeGif {
     }
 
     /**
-     * @param FileHandler $fh
-     * @param FileHandler $fhW
-     * @param float $ratio
+     * @param FileHandler             $fh
+     * @param FileHandler             $fhW
+     * @param float                   $ratio
      * @param LogicalScreenDescriptor $lsd
      */
     private static function processGifStream($fh, $fhW, $ratio, $lsd) {
@@ -169,9 +184,9 @@ class ResizeGif {
 
 
     /**
-     * @param FileHandler $fh
-     * @param FileHandler $fhW
-     * @param float $ratio
+     * @param FileHandler             $fh
+     * @param FileHandler             $fhW
+     * @param float                   $ratio
      * @param LogicalScreenDescriptor $lsd
      */
     private static function readExtensionBlock($fh, $fhW, $ratio, $lsd) {
@@ -216,9 +231,10 @@ class ResizeGif {
 
     /**
      * @param GraphicControlExtension $gce
-     * @param float $ratio
-     * @param FileHandler $fhW
+     * @param float                   $ratio
+     * @param FileHandler             $fhW
      * @param LogicalScreenDescriptor $lsd
+     *
      * @throws Exception
      */
     private static function resizeGraphicControlExtensionBlock($gce, $ratio, $fhW, $lsd) {

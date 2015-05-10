@@ -1,5 +1,25 @@
 <?php
-
+/**
+ * Copyright (C) 2015  A. Grandt
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @author    A. Grandt <php@grandt.com>
+ * @copyright 2015- A. Grandt
+ * @license   GNU LGPL 2.1
+ */
 namespace grandt\ResizeGif\Structure;
 
 use com\grandt\BinStringStatic;
@@ -8,14 +28,6 @@ use grandt\ResizeGif\Files\DataHandler;
 use grandt\ResizeGif\Files\FileHandler;
 use grandt\ResizeGif\Files\ImageHandler;
 
-/**
- * License: GNU LGPL 2.1.
- *
- * @author    A. Grandt <php@grandt.com>
- * @copyright 2015 A. Grandt
- * @license   GNU LGPL 2.1
- * @version   1.0.0
- */
 class ImageDescriptor extends AbstractExtensionBlock {
     /**
      * @var GraphicControlExtension
@@ -42,10 +54,10 @@ class ImageDescriptor extends AbstractExtensionBlock {
     public function encode() {
         $ctSize = BinStringStatic::_strlen($this->colorTable);
         if ($ctSize > 0) {
-            $this->colorTableFlag = TRUE;
+            $this->colorTableFlag = true;
             $this->colorTableSize = $ctSize / 3;
         } else {
-            $this->colorTableFlag = FALSE;
+            $this->colorTableFlag = false;
             $this->colorTableSize = 2;
         }
 
@@ -134,6 +146,7 @@ class ImageDescriptor extends AbstractExtensionBlock {
 
     /**
      * @param LogicalScreenDescriptor $lsd if the parent is an animation, the main LSD may contain vital information.
+     *
      * @return string
      */
     public function generateGif($lsd) {
@@ -145,7 +158,7 @@ class ImageDescriptor extends AbstractExtensionBlock {
         if ($this->parentGCE != null) {
             $nGce = clone $this->parentGCE;
             $nGce->disposalMethod = 0;
-            $nGce->userInputFlag = FALSE;
+            $nGce->userInputFlag = false;
             $nGce->delayTime = 0;
 
             $nId = $nGce->imageDescriptor;
@@ -163,8 +176,9 @@ class ImageDescriptor extends AbstractExtensionBlock {
     }
 
     /**
-     * @param $ratio
+     * @param                         $ratio
      * @param LogicalScreenDescriptor $lsd
+     *
      * @throws Exception
      */
     public function resize($ratio, $lsd) {
@@ -175,13 +189,13 @@ class ImageDescriptor extends AbstractExtensionBlock {
         $tFileD = tempnam("BewareOfGeeksBearingGifs", "grD");
 
         $fhT = new FileHandler();
-        $fhT->openFile($tFileS, TRUE);
+        $fhT->openFile($tFileS, true);
         $fhT->writeData($this->generateGif($lsd));
         $fhT->closeFile();
 
-        ImageHandler::resizeGif($tFileS, $tFileD, $ratio, TRUE);
+        ImageHandler::resizeGif($tFileS, $tFileD, $ratio, true);
 
-        $fhT->openFile($tFileD, FALSE);
+        $fhT->openFile($tFileD, false);
         new Header($fhT);
         $nLsd = new LogicalScreenDescriptor($fhT);
 
@@ -210,11 +224,27 @@ class ImageDescriptor extends AbstractExtensionBlock {
     }
 
     /**
-     * @param FileHandler $fh
+     * @param FileHandler             $fh
      * @param GraphicControlExtension $gce
+     *
      * @return ImageDescriptor
      */
     public static function getFirstImageDescriptor($fh, $gce = null) {
+        $id = self::getFirstImageFrame($fh, $gce);
+        if ($id instanceof GraphicControlExtension) {
+            return $id->imageDescriptor;
+        }
+
+        return $id;
+    }
+
+    /**
+     * @param FileHandler             $fh
+     * @param GraphicControlExtension $gce
+     *
+     * @return ImageDescriptor|GraphicControlExtension
+     */
+    public static function getFirstImageFrame($fh, $gce = null) {
         $nId = null;
 
         while ($nId == null && !$fh->isEOF()) {
@@ -223,9 +253,11 @@ class ImageDescriptor extends AbstractExtensionBlock {
             if (ord($blockLabel) == AbstractExtensionBlock::CONTROL_IMAGE) {
                 $nId = new ImageDescriptor($fh);
                 if ($gce != null) {
-                    $gce->transparentColorFlag = FALSE;
+                    $gce->transparentColorFlag = false;
                     $gce->transparentColorIndex = 0;
                 }
+
+                return $nId;
             } else {
                 if (ord($blockLabel) == AbstractExtensionBlock::CONTROL_EXTENSION) {
                     $fh->seekForward(1);
@@ -236,11 +268,13 @@ class ImageDescriptor extends AbstractExtensionBlock {
                             $gce->transparentColorFlag = $nGce->transparentColorFlag;
                             $gce->transparentColorIndex = $nGce->transparentColorIndex;
                         }
-                        $nId = $nGce->imageDescriptor;
+
+                        return $nGce;
                     }
                 }
             }
         }
-        return $nId;
+
+        return null;
     }
 }

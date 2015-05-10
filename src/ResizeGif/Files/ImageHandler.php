@@ -1,31 +1,39 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: grandt
- * Date: 24-04-2015
- * Time: 15:19
+ * Copyright (C) 2015  A. Grandt
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * @author    A. Grandt <php@grandt.com>
+ * @copyright 2015- A. Grandt
+ * @license   GNU LGPL 2.1
  */
-
 namespace grandt\ResizeGif\Files;
 
 use Imagick;
 
 /**
  * Use either the GD or ImageMagic libraries to resize a single frame gif file.
- *
- * License: GNU LGPL 2.1.
- *
- * @author    A. Grandt <php@grandt.com>
- * @copyright 2015 A. Grandt
- * @license   GNU LGPL 2.1
- * @version   1.0.0
  */
 class ImageHandler {
 
     /**
      * @param string $srcFile
      * @param string $dstFile
-     * @param float $ratio
+     * @param float  $ratio
+     *
      * @return string
      */
     public static function resizeGif($srcFile, $dstFile, $ratio) {
@@ -36,13 +44,15 @@ class ImageHandler {
         if (extension_loaded('imagick')) {
             return self::resizeGifIM($srcFile, $dstFile, $ratio);
         }
-        return FALSE;
+
+        return false;
     }
 
     /**
      * @param string $srcFile
      * @param string $dstFile
-     * @param float $ratio
+     * @param float  $ratio
+     *
      * @return string
      */
     public static function resizeGifGD($srcFile, $dstFile, $ratio) {
@@ -58,12 +68,12 @@ class ImageHandler {
 
         $tcIdx = imagecolortransparent($image_o);
 
-        $color = FALSE;
+        $color = false;
 
         if ($tcIdx != -1) {
             $color = @imagecolorsforindex($image_o, $tcIdx);
         }
-        if ($color !== FALSE) {
+        if ($color !== false) {
             $transparent = imagecolorallocatealpha($image_p, $color['red'], $color['green'], $color['blue'], 127);
             imagefill($image_p, 0, 0, $transparent);
             imagecolortransparent($image_p, $transparent);
@@ -98,7 +108,8 @@ class ImageHandler {
     /**
      * @param string $srcFile
      * @param string $dstFile
-     * @param float $ratio
+     * @param float  $ratio
+     *
      * @return string
      */
     public static function resizeGifIM($srcFile, $dstFile, $ratio) {
