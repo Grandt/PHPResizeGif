@@ -345,26 +345,6 @@ class DebugGif {
     }
 
     /**
-     * @param string $file
-     */
-    public static function dumpFileHexBlock($file) {
-        echo "Reading '$file'\n";
-
-        $fh = new FileHandler();
-
-        try {
-            $fh->openFile($file);
-        } catch (Exception $e) {
-            echo 'Caught exception: ', $e->getMessage(), "\n";
-            exit;
-        }
-
-        HexBlock::printBlock($fh, $fh->getLength(), false);
-        echo "\n";
-        $fh->closeFile();
-    }
-
-    /**
      * @param string                  $dstPath
      * @param int                     $frameCount
      * @param LogicalScreenDescriptor $lsd
